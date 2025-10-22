@@ -1,52 +1,51 @@
 package com.example.itemshop.controller;
 
 import com.example.itemshop.dto.ItemDto;
-import com.example.itemshop.model.Item;
-import com.example.itemshop.service.ItemService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.net.URI;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api/items")
 public class ItemController {
 
-    @Autowired
-    private ItemService itemService;
+    private final Map<Long, ItemDto> store = new LinkedHashMap<>();
+    private final AtomicLong idGen = new AtomicLong(1);
 
     @GetMapping
-    public List<ItemDto> getAllItems() {
-        return itemService.findAll();
+    public List<ItemDto> list() {
+        return new ArrayList<>(store.values());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ItemDto> getItemById(@PathVariable Long id) {
-        return itemService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ItemDto> get(@PathVariable Long id) {
+        ItemDto dto = store.get(id);
+        return dto != null ? ResponseEntity.ok(dto) : ResponseEntity.notFound().build();
     }
 
     @PostMapping
-    public ResponseEntity<ItemDto> createItem(@RequestBody ItemDto itemDto) {
-        ItemDto createdItem = itemService.save(itemDto);
-        return ResponseEntity.status(201).body(createdItem);
+    public ResponseEntity<ItemDto> create(@RequestBody ItemDto input) {
+        Long id = idGen.getAndIncrement();
+        input.setId(id);
+        store.put(id, input);
+        return ResponseEntity.created(URI.create("/api/items/" + id)).body(input);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ItemDto> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto) {
-        return itemService.update(id, itemDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ItemDto> update(@PathVariable Long id, @RequestBody ItemDto input) {
+        if (!store.containsKey(id)) return ResponseEntity.notFound().build();
+        input.setId(id);
+        store.put(id, input);
+        return ResponseEntity.ok(input);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
-        if (itemService.delete(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        store.remove(id);
+        return ResponseEntity.noContent().build();
     }
 }

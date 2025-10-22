@@ -1,46 +1,41 @@
-import static org.mockito.Mockito.*;
+package com.example.itemshop;
+
+// No Mockito: tests exercise the in-memory controller directly
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.example.itemshop.controller.ItemController;
 import com.example.itemshop.dto.ItemDto;
-import com.example.itemshop.service.ItemService;
+// controller-only tests, no service mocks
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+// no Mockito
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Collections;
+// no Collections import needed
 
 public class ItemControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Mock
-    private ItemService itemService;
-
-    @InjectMocks
     private ItemController itemController;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        itemController = new ItemController();
         mockMvc = MockMvcBuilders.standaloneSetup(itemController).build();
     }
 
     @Test
     public void testGetAllItems() throws Exception {
-        when(itemService.findAll()).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/items")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    // no items initially
+    mockMvc.perform(get("/api/items")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
     }
 
     @Test
@@ -49,10 +44,13 @@ public class ItemControllerTest {
         itemDto.setName("Test Item");
         itemDto.setPrice(10.0);
         itemDto.setDescription("Test Description");
+    // create the item first
+    mockMvc.perform(post("/api/items")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"Test Item\",\"price\":10.0,\"description\":\"Test Description\"}"))
+            .andExpect(status().isCreated());
 
-        when(itemService.findById(1L)).thenReturn(itemDto);
-
-        mockMvc.perform(get("/items/1")
+    mockMvc.perform(get("/api/items/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Test Item"));
@@ -65,12 +63,10 @@ public class ItemControllerTest {
         itemDto.setPrice(15.0);
         itemDto.setDescription("New Description");
 
-        when(itemService.save(any())).thenReturn(itemDto);
-
-        mockMvc.perform(post("/items")
+    mockMvc.perform(post("/api/items")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"name\":\"New Item\",\"price\":15.0,\"description\":\"New Description\"}"))
-                .andExpect(status().isCreated());
+        .andExpect(status().isCreated());
     }
 
     @Test
@@ -80,20 +76,28 @@ public class ItemControllerTest {
         itemDto.setPrice(20.0);
         itemDto.setDescription("Updated Description");
 
-        when(itemService.update(eq(1L), any())).thenReturn(itemDto);
+    // create first
+    mockMvc.perform(post("/api/items")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"name\":\"Updated Item\",\"price\":20.0,\"description\":\"Updated Description\"}"))
+        .andExpect(status().isCreated());
 
-        mockMvc.perform(put("/items/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"Updated Item\",\"price\":20.0,\"description\":\"Updated Description\"}"))
-                .andExpect(status().isOk());
+    mockMvc.perform(put("/api/items/1")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"name\":\"Updated Item\",\"price\":20.0,\"description\":\"Updated Description\"}"))
+        .andExpect(status().isOk());
     }
 
     @Test
     public void testDeleteItem() throws Exception {
-        doNothing().when(itemService).delete(1L);
+    // create an item first
+    mockMvc.perform(post("/api/items")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"name\":\"ToDelete\",\"price\":5.0,\"description\":\"Delete me\"}"))
+        .andExpect(status().isCreated());
 
-        mockMvc.perform(delete("/items/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
+    mockMvc.perform(delete("/api/items/1")
+        .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNoContent());
     }
 }

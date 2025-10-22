@@ -1,0 +1,6 @@
+com\example\itemshop\controller\ItemController.class
+com\example\itemshop\model\Item.class
+com\example\itemshop\service\ItemService.class
+com\example\itemshop\dto\ItemDto.class
+com\example\itemshop\FortniteItemShopApplication.class
+com\example\itemshop\repository\ItemRepository.class
