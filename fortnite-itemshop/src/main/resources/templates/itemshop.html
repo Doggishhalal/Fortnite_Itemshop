@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Fortnite Item Shop</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+        body { font-family: 'Bebas Neue', Arial, sans-serif; background: #18181b; color: #fff; margin: 0; }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #232326;
+            padding: 18px 32px 18px 32px;
+            border-bottom: 2px solid #ffd700;
+        }
+        .fortnite-title {
+            font-family: 'Bebas Neue', Arial, sans-serif;
+            font-size: 2.6em;
+            color: #00aaff;
+            letter-spacing: 2px;
+        }
+        .itemshop-title {
+            font-size: 2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .vbucks-box {
+            display: flex;
+            align-items: center;
+            background: #28282d;
+            border-radius: 8px;
+            padding: 8px 16px;
+            color: #fff;
+            font-size: 1.1em;
+            box-shadow: 0 2px 8px #0006;
+        }
+        .vbucks-icon {
+            width: 28px;
+            height: 28px;
+            margin-right: 8px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+                .vbucks-featured, .vbucks-daily {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            background: rgba(24,24,27,0.95);
+            border-top: 2px solid #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            font-size: 1.2em;
+            gap: 6px;
+            height: 42px;
+            white-space: nowrap; /* FIX text disappearing */
+        }
+
+
+        
+                .price-vbucks-icon {
+            width: 18px;      
+            height: 18px;   
+            flex-shrink: 0;
+        }
+
+
+        .shop-layout {
+            display: flex;
+            gap: 32px;
+            max-width: 1200px;
+            margin: 40px auto;
+            align-items: center;
+            justify-content: center;
+        }
+        .section {
+            background: #232326;
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+        }
+        .section-title {
+            font-size: 1.5em;
+            color: #00aaff;
+            margin-bottom: 18px;
+            text-align: left;
+            font-family: 'Bebas Neue', Arial, sans-serif;
+        }
+        .featured-items {
+            display: flex;
+            flex-direction: row;
+            gap: 32px;
+            justify-content: center;
+        }
+        .featured-card {
+            position: relative;
+            background: #28282d;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #000a;
+            width: 270px;
+            height: 410px;
+            overflow: hidden;
+            margin: auto;
+        }
+        .featured-card img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.95);
+        }
+        .item-info {
+            position: absolute;
+            bottom: 70px;
+            left: 0;
+            width: 100%;
+            padding: 0 18px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+        .item-type { font-size: 1em; color: #ff9800; margin-bottom: 4px; }
+        .item-name { font-size: 1.7em; font-weight: bold; color: #ffd700; margin-bottom: 8px; text-shadow: 0 2px 8px #000a; }
+
+        .daily-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 24px;
+        }
+        .daily-card {
+            position: relative;
+            background: #28282d;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px #000a;
+            width: 210px;
+            height: 210px;
+            overflow: hidden;
+            margin: auto;
+        }
+        .daily-card img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.95);
+        }
+        .daily-info {
+            position: absolute;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            padding: 0 12px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-end;
+        }
+        .daily-type { font-size: 0.95em; color: #ff9800; margin-bottom: 2px; }
+        .daily-name { font-size: 1.3em; font-weight: bold; color: #ffd700; margin-bottom: 6px; text-shadow: 0 2px 8px #000a; }
+
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="fortnite-title">Fortnite</div>
+        <div class="itemshop-title">Item Shop</div>
+        <div class="vbucks-box">
+            <img th:src="@{/vbucks.png}" class="vbucks-icon" alt="V-Bucks" />
+            <span>3,200</span>
+        </div>
+    </div>
+    <div class="shop-layout">
+        <div class="section">
+            <div class="section-title">Featured Items</div>
+            <div class="featured-items">
+                <div th:each="item : ${items}" th:if="${item.id == 4 || item.id == 6}" class="featured-card">
+                    <img th:src="${item.imageUrl}" alt="Item Image" />
+                    <div class="item-info">
+                        <div class="item-type" th:text="${item.type}"></div>
+                        <div class="item-name" th:text="${item.name}"></div>
+                    </div>
+                    <div class="vbucks-featured">
+                        <img th:src="@{/vbucks.png}" class="price-vbucks-icon" alt="V-Bucks" />
+                        <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="section-title">Daily Items</div>
+            <div class="daily-items">
+                <div th:each="item,iterStat : ${items}" th:if="${item.id != 4 and item.id != 6 and iterStat.index < 8}" class="daily-card">
+                    <img th:src="${item.imageUrl}" alt="Item Image" />
+                    <div class="daily-info">
+                        <div class="daily-type" th:text="${item.type}"></div>
+                        <div class="daily-name" th:text="${item.name}"></div>
+                    </div>
+                    <div class="vbucks-daily">
+                        <img th:src="@{/vbucks.png}" class="price-vbucks-icon" alt="V-Bucks" />
+                        <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

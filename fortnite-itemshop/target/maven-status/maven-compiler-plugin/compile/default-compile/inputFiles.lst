@@ -1,6 +1,11 @@
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\dto\ItemDto.java
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\FortniteItemShopApplication.java
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\service\ItemService.java
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\repository\ItemRepository.java
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\model\Item.java
-C:\Users\blop3\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\controller\ItemController.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\FortniteItemShopApplication.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\service\SupabaseService.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\controller\HomeController.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\controller\ItemController.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\config\AppConfig.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\dto\ItemDto.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\loader\SupabaseLoader.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\repository\ItemRepository.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\model\Item.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\service\ItemService.java
+C:\Users\user\OneDrive\Dokumente\GitHub\Fortnite_Itemshop\fortnite-itemshop\src\main\java\com\example\itemshop\service\ItemStoreService.java

@@ -42,30 +42,28 @@ public class ItemControllerTest {
     public void testGetItemById() throws Exception {
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Test Item");
-        itemDto.setPrice(10.0);
-        itemDto.setDescription("Test Description");
-    // create the item first
-    mockMvc.perform(post("/api/items")
+        itemDto.setVbucks(10.0);
+        // create the item first
+        mockMvc.perform(post("/api/items")
             .contentType(MediaType.APPLICATION_JSON)
-            .content("{\"name\":\"Test Item\",\"price\":10.0,\"description\":\"Test Description\"}"))
+            .content("{\"name\":\"Test Item\",\"vbucks\":10.0}"))
             .andExpect(status().isCreated());
 
-    mockMvc.perform(get("/api/items/1")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Test Item"));
+        mockMvc.perform(get("/api/items/1")
+            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.name").value("Test Item"));
     }
 
     @Test
     public void testCreateItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         itemDto.setName("New Item");
-        itemDto.setPrice(15.0);
-        itemDto.setDescription("New Description");
+        itemDto.setVbucks(15.0);
 
-    mockMvc.perform(post("/api/items")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"name\":\"New Item\",\"price\":15.0,\"description\":\"New Description\"}"))
+        mockMvc.perform(post("/api/items")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"name\":\"New Item\",\"vbucks\":15.0}"))
         .andExpect(status().isCreated());
     }
 
@@ -73,18 +71,17 @@ public class ItemControllerTest {
     public void testUpdateItem() throws Exception {
         ItemDto itemDto = new ItemDto();
         itemDto.setName("Updated Item");
-        itemDto.setPrice(20.0);
-        itemDto.setDescription("Updated Description");
+        itemDto.setVbucks(20.0);
 
     // create first
     mockMvc.perform(post("/api/items")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Updated Item\",\"price\":20.0,\"description\":\"Updated Description\"}"))
+        .content("{\"name\":\"Updated Item\",\"vbucks\":20.0}"))
         .andExpect(status().isCreated());
 
     mockMvc.perform(put("/api/items/1")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Updated Item\",\"price\":20.0,\"description\":\"Updated Description\"}"))
+        .content("{\"name\":\"Updated Item\",\"vbucks\":20.0}"))
         .andExpect(status().isOk());
     }
 
@@ -93,7 +90,7 @@ public class ItemControllerTest {
     // create an item first
     mockMvc.perform(post("/api/items")
         .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"ToDelete\",\"price\":5.0,\"description\":\"Delete me\"}"))
+        .content("{\"name\":\"ToDelete\",\"vbucks\":5.0}"))
         .andExpect(status().isCreated());
 
     mockMvc.perform(delete("/api/items/1")
