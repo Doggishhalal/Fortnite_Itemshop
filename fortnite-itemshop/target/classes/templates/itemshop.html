@@ -181,6 +181,7 @@
                         <div class="item-type" th:text="${item.type}"></div>
                         <div class="item-name" th:text="${item.name}"></div>
                     </div>
+                    <button class="add-cart-btn" th:attr="data-item-id=${item.id}" style="position:absolute;top:12px;right:12px;background:#ffd700;border:none;padding:8px 10px;border-radius:8px;cursor:pointer;z-index:3;">In Warenkorb</button>
                     <div class="vbucks-featured">
                         <img th:src="@{/vbucks.png}" class="price-vbucks-icon" alt="V-Bucks" />
                         <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}"></span>
@@ -197,6 +198,7 @@
                         <div class="daily-type" th:text="${item.type}"></div>
                         <div class="daily-name" th:text="${item.name}"></div>
                     </div>
+                    <button class="add-cart-btn" th:attr="data-item-id=${item.id}" style="position:absolute;top:8px;right:8px;background:#ffd700;border:none;padding:6px 8px;border-radius:8px;cursor:pointer;z-index:3;">In Warenkorb</button>
                     <div class="vbucks-daily">
                         <img th:src="@{/vbucks.png}" class="price-vbucks-icon" alt="V-Bucks" />
                         <span th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')}"></span>
@@ -205,5 +207,121 @@
             </div>
         </div>
     </div>
+    <!-- Floating cart button -->
+    <button id="openCartBtn" title="Warenkorb" style="position:fixed;right:24px;bottom:24px;padding:12px 16px;border-radius:28px;background:#ffd700;color:#000;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);cursor:pointer;z-index:999;">Warenkorb</button>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" style="display:none;position:fixed;right:24px;bottom:80px;width:360px;max-height:70vh;overflow:auto;background:#232326;border-radius:12px;padding:16px;box-shadow:0 8px 24px rgba(0,0,0,0.6);z-index:1000;color:#fff;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong>Warenkorb</strong>
+            <button id="closeCartBtn" style="background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>
+        </div>
+        <div id="cartContent">
+            <em>Lade Warenkorb…</em>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center;">
+            <button id="clearCartBtn" style="background:#ff4d4f;border:none;padding:8px 12px;border-radius:6px;color:#fff;cursor:pointer;">Leeren</button>
+            <div><strong id="cartTotal">0</strong> V-Bucks</div>
+        </div>
+    </div>
+
+    <script>
+        const cookieName = 'fortnite_cart_id';
+
+        function getCookie(name) {
+            const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+            return v ? v[2] : null;
+        }
+        function setCookie(name, value, days=7) {
+            const d = new Date(); d.setTime(d.getTime() + (days*24*60*60*1000));
+            document.cookie = name + '=' + value + ';path=/;expires=' + d.toUTCString();
+        }
+
+        async function ensureCartId() {
+            let id = getCookie(cookieName);
+            if (!id) {
+                const resp = await fetch('/api/carts', { method: 'POST' });
+                if (!resp.ok) throw new Error('Failed to create cart');
+                const body = await resp.json();
+                id = body.cartId;
+                setCookie(cookieName, id);
+            }
+            return id;
+        }
+
+        async function addToCartHandler(e) {
+            const itemId = e.currentTarget.getAttribute('data-item-id');
+            try {
+                const cartId = await ensureCartId();
+                const resp = await fetch(`/api/carts/${cartId}/items`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ itemId: Number(itemId), quantity: 1 })
+                });
+                if (!resp.ok) {
+                    alert('Fehler beim Hinzufügen zum Warenkorb');
+                    return;
+                }
+                showCart();
+            } catch (err) {
+                console.error(err);
+                alert('Fehler beim Zugriff auf Warenkorb');
+            }
+        }
+
+        async function showCart() {
+            const cartId = getCookie(cookieName);
+            if (!cartId) {
+                document.getElementById('cartContent').innerHTML = '<em>Warenkorb ist leer</em>';
+                document.getElementById('cartTotal').innerText = '0';
+                document.getElementById('cartModal').style.display = 'block';
+                return;
+            }
+            const resp = await fetch(`/api/carts/${cartId}`);
+            if (!resp.ok) {
+                document.getElementById('cartContent').innerHTML = '<em>Warenkorb nicht gefunden</em>';
+                document.getElementById('cartTotal').innerText = '0';
+                document.getElementById('cartModal').style.display = 'block';
+                return;
+            }
+            const dto = await resp.json();
+            const container = document.getElementById('cartContent');
+            if (!dto.items || dto.items.length === 0) {
+                container.innerHTML = '<em>Warenkorb ist leer</em>';
+                document.getElementById('cartTotal').innerText = '0';
+                document.getElementById('cartModal').style.display = 'block';
+                return;
+            }
+            container.innerHTML = '';
+            dto.items.forEach(it => {
+                const row = document.createElement('div');
+                row.style.display = 'flex'; row.style.justifyContent = 'space-between'; row.style.marginBottom = '8px';
+                row.innerHTML = `<div style="flex:1">${it.name} <br/><small style=\"opacity:0.8\">${it.price} V-Bucks × ${it.quantity}</small></div>`;
+                const actions = document.createElement('div');
+                actions.style.display = 'flex'; actions.style.flexDirection = 'column'; actions.style.gap = '6px';
+                const removeBtn = document.createElement('button'); removeBtn.textContent='✕'; removeBtn.title='Entfernen';
+                removeBtn.style.background='#ff4d4f'; removeBtn.style.border='none'; removeBtn.style.color='#fff'; removeBtn.style.padding='6px'; removeBtn.style.borderRadius='6px'; removeBtn.style.cursor='pointer';
+                removeBtn.onclick = async () => { await removeItem(dto.id, it.itemId); showCart(); };
+                actions.appendChild(removeBtn);
+                row.appendChild(actions);
+                container.appendChild(row);
+            });
+            document.getElementById('cartTotal').innerText = dto.total || 0;
+            document.getElementById('cartModal').style.display = 'block';
+        }
+
+        async function removeItem(cartId, itemId) {
+            await fetch(`/api/carts/${cartId}/items/${itemId}`, { method: 'DELETE' });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.add-cart-btn').forEach(btn => btn.addEventListener('click', addToCartHandler));
+            document.getElementById('openCartBtn').addEventListener('click', showCart);
+            document.getElementById('closeCartBtn').addEventListener('click', () => document.getElementById('cartModal').style.display='none');
+            document.getElementById('clearCartBtn').addEventListener('click', async () => {
+                const id = getCookie(cookieName); if (!id) return; await fetch(`/api/carts/${id}`, { method: 'DELETE' }); showCart();
+            });
+        });
+    </script>
 </body>
 </html>
